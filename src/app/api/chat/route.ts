@@ -1,13 +1,12 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { SchemaType } from '@google/generative-ai';
 import { createClient } from '@/lib/supabase/server';
+import { generateJSON } from '@/lib/gemini';
 import { WEEKLY_DIET, MACRO_TARGETS } from '@/lib/diet-data';
 import type { DayKey, DietOverride, MealKey, MealOption, Profile } from '@/lib/types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 30;
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+export const maxDuration = 60;
 
 const CHANGE_SCHEMA = {
   type: SchemaType.OBJECT,
@@ -115,22 +114,20 @@ export async function POST(request: NextRequest) {
     )
     .join('\n');
 
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-flash-latest',
-    systemInstruction: buildSystemPrompt(profile as Profile, dietText),
-    generationConfig: {
-      responseMimeType: 'application/json',
-      responseSchema: CHANGE_SCHEMA as never,
-      temperature: 0.3
-    }
-  });
-
   try {
-    const result = await model.generateContent(
-      `Día visible en pantalla: ${dia_contexto ?? 'no especificado'}.\nPetición del usuario: ${mensaje}`
-    );
+    const text = await generateJSON({
+      systemInstruction: buildSystemPrompt(profile as Profile, dietText),
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: CHANGE_SCHEMA as never,
+        temperature: 0.3
+      },
+      request: [
+        `Día visible en pantalla: ${dia_contexto ?? 'no especificado'}.\nPetición del usuario: ${mensaje}`
+      ]
+    });
 
-    const change = JSON.parse(result.response.text()) as {
+    const change = JSON.parse(text) as {
       dia: DayKey;
       comida: MealKey;
       opcion: number;

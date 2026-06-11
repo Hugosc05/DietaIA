@@ -1,12 +1,11 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { GoogleGenerativeAI, SchemaType } from '@google/generative-ai';
+import { SchemaType } from '@google/generative-ai';
 import { createClient } from '@/lib/supabase/server';
+import { generateJSON } from '@/lib/gemini';
 import type { VisionResult } from '@/lib/types';
 
 export const runtime = 'nodejs';
-export const maxDuration = 30;
-
-const genAI = new GoogleGenerativeAI(process.env.GEMINI_API_KEY!);
+export const maxDuration = 60;
 
 const VISION_SCHEMA = {
   type: SchemaType.OBJECT,
@@ -50,28 +49,26 @@ export async function POST(request: NextRequest) {
 
   const bytes = Buffer.from(await image.arrayBuffer());
 
-  const model = genAI.getGenerativeModel({
-    model: 'gemini-flash-latest',
-    systemInstruction: SYSTEM_PROMPT,
-    generationConfig: {
-      responseMimeType: 'application/json',
-      responseSchema: VISION_SCHEMA as never,
-      temperature: 0.2
-    }
-  });
-
   try {
-    const result = await model.generateContent([
-      {
-        inlineData: {
-          mimeType: image.type || 'image/jpeg',
-          data: bytes.toString('base64')
-        }
+    const text = await generateJSON({
+      systemInstruction: SYSTEM_PROMPT,
+      generationConfig: {
+        responseMimeType: 'application/json',
+        responseSchema: VISION_SCHEMA as never,
+        temperature: 0.2
       },
-      'Analiza este plato y devuelve el JSON nutricional.'
-    ]);
+      request: [
+        {
+          inlineData: {
+            mimeType: image.type || 'image/jpeg',
+            data: bytes.toString('base64')
+          }
+        },
+        'Analiza este plato y devuelve el JSON nutricional.'
+      ]
+    });
 
-    const parsed = JSON.parse(result.response.text()) as VisionResult;
+    const parsed = JSON.parse(text) as VisionResult;
     return NextResponse.json(parsed);
   } catch (err) {
     const detail = err instanceof Error ? err.message : 'desconocido';
