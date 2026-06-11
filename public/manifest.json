@@ -1,0 +1,15 @@
+{
+  "name": "DietaIA - Definición Abdominal",
+  "short_name": "DietaIA",
+  "description": "Plan de definición 1900 kcal con tracking de dieta, pesas, cardio y pasos",
+  "start_url": "/",
+  "display": "standalone",
+  "orientation": "portrait",
+  "background_color": "#0b0f14",
+  "theme_color": "#0b0f14",
+  "lang": "es",
+  "icons": [
+    { "src": "/icons/icon-192.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
+    { "src": "/icons/icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
+  ]
+}

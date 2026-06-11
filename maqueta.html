@@ -1,0 +1,567 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>DietaIA · Maqueta</title>
+<style>
+  :root {
+    --base: #0b0f14; --card: #141a22; --edge: #1f2937;
+    --accent: #22d3ee; --ok: #34d399; --txt: #e2e8f0;
+    --muted: #94a3b8; --dim: #64748b;
+  }
+  * { margin: 0; padding: 0; box-sizing: border-box; -webkit-tap-highlight-color: transparent; }
+  body {
+    background: var(--base); color: var(--txt);
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
+    -webkit-font-smoothing: antialiased;
+  }
+  .phone { max-width: 430px; margin: 0 auto; min-height: 100vh; padding: 24px 16px 96px; }
+  h1 { font-size: 20px; font-weight: 700; color: #fff; }
+  .sub { font-size: 13px; color: var(--muted); margin-top: 2px; }
+  .card { background: var(--card); border: 1px solid var(--edge); border-radius: 16px; padding: 16px; margin-top: 20px; }
+  .card h2 { font-size: 11px; font-weight: 600; text-transform: uppercase; letter-spacing: 1px; color: var(--muted); margin-bottom: 12px; }
+  .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+  .tile {
+    display: flex; align-items: center; gap: 10px; padding: 12px;
+    background: var(--base); border: 1px solid var(--edge); border-radius: 12px;
+    font-size: 14px; font-weight: 500; color: #cbd5e1; cursor: pointer; text-align: left; width: 100%;
+    transition: all .15s;
+  }
+  .tile .box {
+    width: 20px; height: 20px; border-radius: 6px; border: 1px solid var(--dim);
+    display: flex; align-items: center; justify-content: center; font-size: 12px; flex-shrink: 0;
+  }
+  .tile.on { border-color: rgba(52,211,153,.5); background: rgba(52,211,153,.1); color: var(--ok); }
+  .tile.on .box { background: var(--ok); border-color: var(--ok); color: #000; }
+  .hint { font-size: 11px; color: var(--dim); margin-top: 12px; }
+  .steps-row { display: flex; justify-content: space-between; align-items: center; }
+  .steps-num { font-size: 26px; font-weight: 700; color: var(--ok); margin-top: 4px; }
+  .steps-meta { text-align: right; font-size: 11px; color: var(--muted); }
+  .steps-meta b { display: block; color: var(--txt); }
+  .bar { height: 8px; background: var(--edge); border-radius: 99px; margin-top: 12px; overflow: hidden; }
+  .bar > div { height: 100%; border-radius: 99px; background: var(--ok); width: 92%; }
+  .wrow { display: flex; gap: 8px; }
+  .wrow input {
+    flex: 1; background: var(--base); border: 1px solid var(--edge); border-radius: 12px;
+    padding: 12px 16px; font-size: 18px; font-weight: 600; color: #fff; outline: none; width: 100%;
+  }
+  .wrow input:focus { border-color: var(--accent); }
+  .wrow .kg { align-self: center; font-size: 13px; color: var(--muted); }
+  .btn-accent {
+    background: var(--accent); color: #000; border: none; border-radius: 12px;
+    padding: 0 20px; font-size: 14px; font-weight: 600; cursor: pointer;
+  }
+  .saved { font-size: 12px; color: var(--ok); margin-top: 8px; }
+  .sum3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 12px; text-align: center; }
+  .sum3 b { font-size: 18px; color: #fff; display: block; }
+  .sum3 span { font-size: 11px; color: var(--muted); }
+  .scan-head { display: flex; justify-content: space-between; align-items: center; }
+  .scan-btn {
+    background: rgba(34,211,238,.15); color: var(--accent); border: none; border-radius: 8px;
+    padding: 6px 12px; font-size: 12px; font-weight: 600; cursor: pointer;
+  }
+  .scan-result { background: var(--base); border: 1px solid var(--edge); border-radius: 12px; padding: 12px; margin-top: 12px; }
+  .scan-result .nm { font-weight: 600; color: #fff; }
+  .scan-result .cf { font-size: 12px; color: var(--muted); }
+  .macros4 { display: grid; grid-template-columns: repeat(4,1fr); gap: 8px; margin-top: 8px; text-align: center; }
+  .macros4 div { background: var(--card); border-radius: 8px; padding: 6px 0; }
+  .macros4 b { color: #fff; font-size: 14px; display: block; }
+  .macros4 span { font-size: 10px; color: var(--muted); }
+  .scan-actions { display: flex; gap: 8px; margin-top: 12px; }
+  .btn-ok { flex: 1; background: var(--ok); color: #000; border: none; border-radius: 8px; padding: 9px; font-size: 13px; font-weight: 600; cursor: pointer; }
+  .btn-ghost { background: none; border: 1px solid var(--edge); color: #cbd5e1; border-radius: 8px; padding: 9px 16px; font-size: 13px; cursor: pointer; }
+  .pills { display: flex; gap: 6px; overflow-x: auto; padding: 4px 0 8px; margin-top: 16px; scrollbar-width: none; }
+  .pills::-webkit-scrollbar { display: none; }
+  .pill {
+    flex-shrink: 0; padding: 7px 16px; border-radius: 99px; font-size: 13px; font-weight: 500;
+    background: var(--card); border: 1px solid var(--edge); color: #cbd5e1; cursor: pointer;
+  }
+  .pill.on { background: var(--accent); border-color: var(--accent); color: #000; }
+  .meal-head { display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px; }
+  .meal-head b { color: #fff; font-size: 15px; }
+  .meal-head span { font-size: 11px; color: var(--muted); }
+  .opt {
+    width: 100%; text-align: left; background: var(--base); border: 1px solid var(--edge);
+    border-radius: 12px; padding: 12px; margin-top: 8px; cursor: pointer; color: inherit;
+  }
+  .opt.on { border-color: rgba(52,211,153,.6); background: rgba(52,211,153,.08); }
+  .opt .t { display: flex; justify-content: space-between; font-size: 13px; font-weight: 600; color: #fff; }
+  .opt.on .t { color: var(--ok); }
+  .opt ul { list-style: none; margin-top: 6px; }
+  .opt li { font-size: 12px; color: var(--muted); padding: 1px 0; }
+  .chat { border-color: rgba(34,211,238,.3); }
+  .chat h2 { color: var(--accent); }
+  .chat p { font-size: 12px; color: var(--muted); margin-bottom: 12px; }
+  .chat .wrow input { font-size: 14px; font-weight: 400; }
+  .chartbox { position: relative; height: 260px; margin-top: 4px; }
+  .chartbox.sm { height: 210px; }
+  .note { font-size: 11px; color: var(--dim); margin-top: 10px; line-height: 1.5; }
+  nav {
+    position: fixed; left: 0; right: 0; bottom: 0; z-index: 50;
+    background: rgba(20,26,34,.95); backdrop-filter: blur(8px); border-top: 1px solid var(--edge);
+  }
+  nav .inner { max-width: 430px; margin: 0 auto; display: flex; justify-content: space-around; padding-bottom: env(safe-area-inset-bottom); }
+  nav button {
+    background: none; border: none; color: var(--muted); font-size: 11px; font-weight: 500;
+    padding: 10px 24px; cursor: pointer; display: flex; flex-direction: column; align-items: center; gap: 2px;
+  }
+  nav button .ic { font-size: 18px; }
+  nav button.on { color: var(--accent); }
+  .view { display: none; }
+  .view.on { display: block; }
+  .mocktag {
+    position: fixed; top: 10px; right: 10px; z-index: 60; background: rgba(251,191,36,.15);
+    color: #fbbf24; font-size: 10px; font-weight: 700; letter-spacing: 1px;
+    padding: 4px 10px; border-radius: 99px; border: 1px solid rgba(251,191,36,.3);
+  }
+</style>
+</head>
+<body>
+<div class="mocktag">MAQUETA · MOCK DATA</div>
+<div class="phone">
+
+  <!-- ====================== HOY ====================== -->
+  <div class="view on" id="view-hoy">
+    <h1 id="fecha-hoy"></h1>
+    <p class="sub">1900 kcal · 140P / 200C / 60G</p>
+
+    <div class="card">
+      <h2>Dieta de hoy</h2>
+      <div class="grid2" id="checks-dieta"></div>
+    </div>
+
+    <div class="card">
+      <h2>Entrenamiento</h2>
+      <div class="grid2" id="checks-entreno"></div>
+      <p class="hint">4 días/semana de pesas al fallo con sobrecarga progresiva · 1 día de cardio LISS</p>
+    </div>
+
+    <div class="card">
+      <div class="steps-row">
+        <div>
+          <h2 style="margin-bottom:0">Pasos hoy</h2>
+          <div class="steps-num">9.214</div>
+        </div>
+        <div class="steps-meta">Objetivo<b>8.000 – 10.000</b><span style="font-size:10px">Sync automático vía HealthKit</span></div>
+      </div>
+      <div class="bar"><div></div></div>
+    </div>
+
+    <div class="card">
+      <h2>Peso en ayunas</h2>
+      <div class="wrow">
+        <input type="number" inputmode="decimal" step="0.1" value="62.8" id="peso-input">
+        <span class="kg">kg</span>
+        <button class="btn-accent" onclick="document.getElementById('peso-saved').style.display='block'">Guardar</button>
+      </div>
+      <p class="saved" id="peso-saved" style="display:none">Registrado: 62.8 kg</p>
+    </div>
+
+    <div class="card">
+      <div class="scan-head">
+        <h2 style="margin-bottom:0">Escáner de plato (IA)</h2>
+        <button class="scan-btn">📷 Foto</button>
+      </div>
+      <div class="scan-result">
+        <p class="nm">Merluza al horno con patata y puré de calabacín</p>
+        <p class="cf">~480 g · confianza alta</p>
+        <div class="macros4">
+          <div><b>462</b><span>kcal</span></div>
+          <div><b>41</b><span>P</span></div>
+          <div><b>39</b><span>C</span></div>
+          <div><b>15</b><span>G</span></div>
+        </div>
+        <div class="scan-actions">
+          <button class="btn-ok">Aprobar y registrar</button>
+          <button class="btn-ghost">Descartar</button>
+        </div>
+      </div>
+    </div>
+
+    <div class="card">
+      <h2>Resumen semanal</h2>
+      <div class="sum3">
+        <div><b>62.9</b><span>kg medio</span></div>
+        <div><b>58.420</b><span>pasos</span></div>
+        <div><b>92.9%</b><span>adherencia</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== DIETA ====================== -->
+  <div class="view" id="view-dieta">
+    <h1>Dieta semanal</h1>
+    <p class="sub">1900 kcal/día · 140P / 200C / 60G · Puré de calabacín como verdura base</p>
+    <div class="pills" id="day-pills"></div>
+    <div id="meals"></div>
+    <div class="card chat">
+      <h2>Modificar dieta con IA</h2>
+      <p>Ej.: «esta semana cambia la ternera del martes por lomo». La IA respeta tus 1900 kcal y restricciones.</p>
+      <div class="wrow">
+        <input placeholder="Pide un cambio…">
+        <button class="btn-accent">Enviar</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- ====================== PROGRESO ====================== -->
+  <div class="view" id="view-progreso">
+    <h1>Progreso</h1>
+    <p class="sub">Correlación peso en ayunas ↔ pasos diarios · objetivo: definición de oblicuos</p>
+
+    <div class="card">
+      <h2>Peso (tendencia suavizada) vs Pasos</h2>
+      <div class="chartbox" id="chart-peso"></div>
+      <p class="note">Línea verde discontinua: mínimo de 8.000 pasos. La tendencia suavizada elimina las fluctuaciones de agua y glucógeno.</p>
+    </div>
+
+    <div class="card">
+      <h2>Déficit real vs teórico (kcal/día por semana)</h2>
+      <div class="chartbox sm" id="chart-deficit"></div>
+      <p class="note">Déficit real calculado a partir de la variación de la media semanal de peso (7.700 kcal/kg).</p>
+    </div>
+  </div>
+</div>
+
+<nav>
+  <div class="inner">
+    <button class="on" data-v="hoy"><span class="ic">✓</span>Hoy</button>
+    <button data-v="dieta"><span class="ic">🍽</span>Dieta</button>
+    <button data-v="progreso"><span class="ic">📈</span>Progreso</button>
+  </div>
+</nav>
+
+<script>
+const M = {
+  desayuno: { kcal: 495, p: 30, c: 60, f: 15 },
+  m_manana: { kcal: 310, p: 20, c: 35, f: 10 },
+  comida:   { kcal: 640, p: 50, c: 65, f: 20 },
+  cena:     { kcal: 455, p: 40, c: 40, f: 15 }
+};
+const MEAL_LABELS = { desayuno: 'Desayuno', m_manana: 'Media Mañana', comida: 'Comida', cena: 'Cena' };
+const DAYS = ['lunes','martes','miercoles','jueves','viernes','sabado','domingo'];
+const DAY_LABELS = { lunes:'Lun', martes:'Mar', miercoles:'Mié', jueves:'Jue', viernes:'Vie', sabado:'Sáb', domingo:'Dom' };
+
+const DIET = {
+  lunes: {
+    desayuno: [
+      ['Tortilla con tostadas', ['Tortilla de 2 huevos + 4 claras','Pan integral tostado 90 g','Tomate rallado 100 g','AOVE 5 g','Kiwi 1 ud']],
+      ['Yogur griego con tortitas', ['Yogur griego natural 0% 250 g','Tortitas de arroz 4 ud','Plátano 120 g','Almendras 12 g']]
+    ],
+    m_manana: [
+      ['Atún con tortitas', ['Atún al natural 80 g escurrido','Tortitas de arroz 3 ud','Nueces 10 g']],
+      ['Yogur con manzana', ['Yogur griego 0% 170 g','Manzana 150 g','Almendras 15 g','Tortita de arroz 1 ud']]
+    ],
+    comida: [
+      ['Pollo con arroz basmati', ['Pechuga de pollo a la plancha 180 g','Arroz basmati 75 g (en seco)','Puré de calabacín 250 g','AOVE 10 g']],
+      ['Ternera magra con patata', ['Ternera magra a la plancha 170 g','Patata cocida 300 g','Puré de calabacín 250 g','AOVE 8 g']]
+    ],
+    cena: [
+      ['Merluza al horno', ['Merluza al horno 220 g','Patata asada 180 g','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Tortilla con pan integral', ['Tortilla de 2 huevos + 4 claras','Pan integral 60 g','Puré de calabacín 250 g']]
+    ]
+  },
+  martes: {
+    desayuno: [
+      ['Revuelto con pavo', ['Revuelto de 1 huevo + 5 claras','Fiambre de pavo 60 g','Pan integral 90 g','Naranja 1 ud']],
+      ['Queso batido con cereales de maíz', ['Queso fresco batido 0% 250 g','Copos de maíz sin azúcar 50 g','Fresas 150 g','Nueces 12 g']]
+    ],
+    m_manana: [
+      ['Mini bocadillo de pavo', ['Pan integral 60 g','Fiambre de pavo 80 g','Tomate en rodajas 80 g','Nueces 8 g']],
+      ['Huevos duros con fruta', ['Huevos duros 2 ud','Tortitas de arroz 3 ud','Manzana 120 g']]
+    ],
+    comida: [
+      ['Ternera con pasta integral', ['Ternera magra a la plancha 170 g','Pasta integral 70 g (en seco)','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Pavo con arroz', ['Pechuga de pavo a la plancha 190 g','Arroz blanco 75 g (en seco)','Puré de calabacín 250 g','AOVE 10 g']]
+    ],
+    cena: [
+      ['Bacalao con patata', ['Lomo de bacalao 230 g','Patata cocida 180 g','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Sepia a la plancha', ['Sepia a la plancha 250 g','Pan integral 60 g','Puré de calabacín 250 g','AOVE 10 g']]
+    ]
+  },
+  miercoles: {
+    desayuno: [
+      ['Tostadas con queso batido y pavo', ['Pan integral 90 g','Queso fresco batido 0% 100 g','Fiambre de pavo 60 g','AOVE 8 g','Pera 1 ud']],
+      ['Tortitas con requesón', ['Tortitas de arroz 4 ud','Requesón desnatado 150 g','Plátano 120 g','Almendras 10 g']]
+    ],
+    m_manana: [
+      ['Atún con pan', ['Atún al natural 80 g escurrido','Pan integral 50 g','Tomate 100 g','Nueces 8 g']],
+      ['Yogur con uvas', ['Yogur griego 0% 170 g','Uvas 120 g','Nueces 12 g','Tortita de arroz 1 ud']]
+    ],
+    comida: [
+      ['Pollo con patata asada', ['Pechuga de pollo a la plancha 180 g','Patata asada 320 g','Puré de calabacín 250 g','AOVE 10 g']],
+      ['Atún fresco con arroz', ['Atún fresco a la plancha 170 g','Arroz blanco 75 g (en seco)','Puré de calabacín 250 g','AOVE 8 g']]
+    ],
+    cena: [
+      ['Lubina al horno', ['Lubina al horno 230 g','Patata cocida 170 g','Puré de calabacín 250 g','AOVE 6 g']],
+      ['Pollo con arroz', ['Pechuga de pollo 150 g','Arroz blanco 50 g (en seco)','Puré de calabacín 250 g','AOVE 6 g']]
+    ]
+  },
+  jueves: {
+    desayuno: [
+      ['Tortilla de claras con pan', ['Tortilla de 1 huevo + 5 claras','Pan integral 90 g','Tomate rallado 100 g','AOVE 6 g','Mandarinas 2 ud']],
+      ['Yogur griego con kiwi', ['Yogur griego natural 0% 250 g','Tortitas de maíz 4 ud','Kiwi 2 ud','Almendras 12 g']]
+    ],
+    m_manana: [
+      ['Queso batido con manzana', ['Queso fresco batido 0% 200 g','Manzana 150 g','Nueces 10 g','Tortita de arroz 1 ud']],
+      ['Bocadillo de atún', ['Pan integral 60 g','Atún al natural 60 g','Tomate 80 g','Almendras 8 g']]
+    ],
+    comida: [
+      ['Pavo con pasta', ['Pechuga de pavo a la plancha 190 g','Pasta 70 g (en seco)','Puré de calabacín 250 g','AOVE 10 g']],
+      ['Pollo con patata cocida', ['Pechuga de pollo 180 g','Patata cocida 320 g','Puré de calabacín 250 g','AOVE 10 g']]
+    ],
+    cena: [
+      ['Merluza con pan', ['Merluza a la plancha 220 g','Pan integral 60 g','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Revuelto de gambas', ['Gambas peladas 200 g','Huevo 1 ud','Patata cocida 170 g','Puré de calabacín 250 g','AOVE 6 g']]
+    ]
+  },
+  viernes: {
+    desayuno: [
+      ['Bocadillo de pavo y queso', ['Pan integral 100 g','Fiambre de pavo 90 g','Queso fresco batido 0% 80 g','AOVE 6 g','Naranja 1 ud']],
+      ['Requesón con cereales de maíz', ['Requesón desnatado 200 g','Copos de maíz sin azúcar 45 g','Fresas 150 g','Nueces 12 g']]
+    ],
+    m_manana: [
+      ['Huevos duros con tortitas', ['Huevos duros 2 ud','Tortitas de arroz 2 ud','Pera 130 g']],
+      ['Atún con almendras', ['Atún al natural 80 g escurrido','Tortitas de arroz 3 ud','Almendras 10 g']]
+    ],
+    comida: [
+      ['Ternera con arroz', ['Ternera magra a la plancha 170 g','Arroz blanco 75 g (en seco)','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Salmón con patata', ['Salmón a la plancha 140 g','Patata cocida 300 g','Puré de calabacín 250 g']]
+    ],
+    cena: [
+      ['Bacalao al horno', ['Lomo de bacalao 230 g','Patata asada 180 g','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Tortilla con pan', ['Tortilla de 2 huevos + 4 claras','Pan integral 60 g','Puré de calabacín 250 g']]
+    ]
+  },
+  sabado: {
+    desayuno: [
+      ['Tortitas con pavo y queso', ['Tortitas de arroz 5 ud','Fiambre de pavo 80 g','Queso fresco batido 0% 120 g','Almendras 12 g','Manzana 120 g']],
+      ['Tostadas con tomate y jamón', ['Pan integral 90 g','Jamón serrano sin grasa visible 50 g','Tomate rallado 100 g','AOVE 8 g','Yogur griego 0% 125 g']]
+    ],
+    m_manana: [
+      ['Yogur con fruta y nueces', ['Yogur griego 0% 170 g','Plátano 100 g','Nueces 12 g']],
+      ['Pavo con pan y tomate', ['Fiambre de pavo 80 g','Pan integral 60 g','Tomate 80 g','Nueces 8 g']]
+    ],
+    comida: [
+      ['Arroz con pollo y sepia', ['Arroz 75 g (en seco)','Pechuga de pollo 120 g','Sepia 120 g','Puré de calabacín 250 g','AOVE 10 g']],
+      ['Ternera con pasta', ['Ternera magra a la plancha 170 g','Pasta 70 g (en seco)','Puré de calabacín 250 g','AOVE 8 g']]
+    ],
+    cena: [
+      ['Dorada al horno', ['Dorada al horno 230 g','Patata asada 170 g','Puré de calabacín 250 g','AOVE 6 g']],
+      ['Pollo con arroz', ['Pechuga de pollo 150 g','Arroz blanco 50 g (en seco)','Puré de calabacín 250 g','AOVE 6 g']]
+    ]
+  },
+  domingo: {
+    desayuno: [
+      ['Tortilla francesa con pan', ['Tortilla de 2 huevos + 4 claras','Pan integral 90 g','Tomate rallado 100 g','AOVE 5 g','Fresas 150 g']],
+      ['Queso batido con cereales', ['Queso fresco batido 0% 250 g','Copos de maíz sin azúcar 50 g','Plátano 100 g','Almendras 10 g']]
+    ],
+    m_manana: [
+      ['Atún con tortitas y nueces', ['Atún al natural 80 g escurrido','Tortitas de arroz 3 ud','Nueces 10 g']],
+      ['Huevos duros con manzana', ['Huevos duros 2 ud','Tortitas de arroz 3 ud','Manzana 120 g']]
+    ],
+    comida: [
+      ['Pollo asado con arroz', ['Pollo asado sin piel 180 g','Arroz blanco 75 g (en seco)','Puré de calabacín 250 g','AOVE 10 g']],
+      ['Ternera con patata', ['Ternera magra a la plancha 170 g','Patata asada 320 g','Puré de calabacín 250 g','AOVE 8 g']]
+    ],
+    cena: [
+      ['Merluza en salsa verde ligera', ['Merluza 220 g en salsa verde (sin harina)','Patata cocida 180 g','Puré de calabacín 250 g','AOVE 8 g']],
+      ['Gambas y sepia a la plancha', ['Gambas peladas 150 g','Sepia 150 g','Pan integral 60 g','Puré de calabacín 250 g','AOVE 8 g']]
+    ]
+  }
+};
+
+// ---------- Navegación ----------
+document.querySelectorAll('nav button').forEach(btn => {
+  btn.onclick = () => {
+    document.querySelectorAll('nav button').forEach(b => b.classList.remove('on'));
+    document.querySelectorAll('.view').forEach(v => v.classList.remove('on'));
+    btn.classList.add('on');
+    document.getElementById('view-' + btn.dataset.v).classList.add('on');
+    window.scrollTo(0, 0);
+    if (btn.dataset.v === 'progreso') initCharts();
+  };
+});
+
+// ---------- HOY ----------
+document.getElementById('fecha-hoy').textContent =
+  new Date().toLocaleDateString('es-ES', { weekday: 'long', day: 'numeric', month: 'long' })
+    .replace(/^./, c => c.toUpperCase());
+
+const checksDieta = [['Desayuno', true], ['Media Mañana', true], ['Comida', true], ['Cena', false]];
+const checksEntreno = [['Pesas (al fallo)', true], ['Cardio LISS', false]];
+
+function renderChecks(containerId, items) {
+  const el = document.getElementById(containerId);
+  items.forEach(([label, on]) => {
+    const b = document.createElement('button');
+    b.className = 'tile' + (on ? ' on' : '');
+    b.innerHTML = `<span class="box">${on ? '✓' : ''}</span>${label}`;
+    b.onclick = () => {
+      b.classList.toggle('on');
+      b.querySelector('.box').textContent = b.classList.contains('on') ? '✓' : '';
+    };
+    el.appendChild(b);
+  });
+}
+renderChecks('checks-dieta', checksDieta);
+renderChecks('checks-entreno', checksEntreno);
+
+// ---------- DIETA ----------
+const jsDay = ['domingo','lunes','martes','miercoles','jueves','viernes','sabado'][new Date().getDay()];
+let selectedDay = jsDay;
+const consumed = { desayuno: 1, m_manana: 1, comida: 2, cena: null };
+
+const pillsEl = document.getElementById('day-pills');
+DAYS.forEach(d => {
+  const b = document.createElement('button');
+  b.className = 'pill' + (d === selectedDay ? ' on' : '');
+  b.textContent = DAY_LABELS[d] + (d === jsDay ? ' ·' : '');
+  b.onclick = () => { selectedDay = d; renderPills(); renderMeals(); };
+  pillsEl.appendChild(b);
+});
+function renderPills() {
+  [...pillsEl.children].forEach((b, i) => b.classList.toggle('on', DAYS[i] === selectedDay));
+}
+
+function renderMeals() {
+  const el = document.getElementById('meals');
+  el.innerHTML = '';
+  const isToday = selectedDay === jsDay;
+  Object.keys(MEAL_LABELS).forEach(meal => {
+    const m = M[meal];
+    const card = document.createElement('div');
+    card.className = 'card';
+    card.innerHTML = `<div class="meal-head"><b>${MEAL_LABELS[meal]}</b><span>${m.kcal} kcal · ${m.p}P/${m.c}C/${m.f}G</span></div>`;
+    DIET[selectedDay][meal].forEach(([name, items], i) => {
+      const opcion = i + 1;
+      const sel = isToday && consumed[meal] === opcion;
+      const btn = document.createElement('button');
+      btn.className = 'opt' + (sel ? ' on' : '');
+      btn.innerHTML = `<div class="t"><span>Opción ${opcion}: ${name}</span>${sel ? '<span>✓</span>' : ''}</div>
+        <ul>${items.map(it => `<li>· ${it}</li>`).join('')}</ul>`;
+      btn.onclick = () => {
+        if (!isToday) return;
+        consumed[meal] = consumed[meal] === opcion ? null : opcion;
+        renderMeals();
+      };
+      card.appendChild(btn);
+    });
+    if (!isToday) {
+      const p = document.createElement('p');
+      p.className = 'hint';
+      p.textContent = 'Solo puedes marcar consumo en el día actual.';
+      card.appendChild(p);
+    }
+    el.appendChild(card);
+  });
+}
+renderMeals();
+
+// ---------- PROGRESO (mock 30 días) ----------
+const labels = [], pesoRaw = [], pasos = [];
+let w = 64.0;
+for (let i = 29; i >= 0; i--) {
+  const d = new Date(); d.setDate(d.getDate() - i);
+  labels.push(d.toLocaleDateString('es-ES', { day: '2-digit', month: '2-digit' }));
+  w -= 0.04 + (Math.sin(i * 1.7) * 0.06);
+  pesoRaw.push(Math.round(w * 10) / 10);
+  pasos.push(7000 + Math.round(Math.abs(Math.sin(i * 2.3)) * 4500) + (i % 7 === 0 ? -1500 : 0));
+}
+const pesoSuave = pesoRaw.map((_, i) => {
+  const s = pesoRaw.slice(Math.max(0, i - 3), Math.min(pesoRaw.length, i + 4));
+  return Math.round((s.reduce((a, b) => a + b, 0) / s.length) * 100) / 100;
+});
+
+let chartsDone = false;
+function initCharts() { Chart_render(); }
+function Chart_render() {
+  if (chartsDone) return;
+  chartsDone = true;
+
+  function legend(items) {
+    let s = '', xx = 38;
+    items.forEach(([color, label]) => {
+      s += `<circle cx="${xx}" cy="12" r="3.5" fill="${color}"/>`;
+      s += `<text x="${xx + 7}" y="15" fill="#94a3b8" font-size="8">${label}</text>`;
+      xx += 7 + label.length * 4.4 + 16;
+    });
+    return s;
+  }
+
+  // ----- Gráfico 1: peso (doble eje) vs pasos -----
+  (function () {
+    const W = 400, H = 260, L = 40, R = 32, T = 28, B = 24;
+    const pw = W - L - R, ph = H - T - B;
+    const wMin = Math.min(...pesoRaw) - 0.3, wMax = Math.max(...pesoRaw) + 0.3;
+    const sMax = 12000;
+    const x = i => L + (i + 0.5) * pw / pesoRaw.length;
+    const y1 = v => T + ph - (v - wMin) / (wMax - wMin) * ph;
+    const y2 = v => T + ph - v / sMax * ph;
+    let s = '';
+
+    for (let k = 0; k <= 4; k++) {
+      const v = wMin + (wMax - wMin) * k / 4, yy = y1(v);
+      s += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="#1f2937" stroke-dasharray="3 3"/>`;
+      s += `<text x="${L - 5}" y="${yy + 3}" fill="#22d3ee" font-size="8" text-anchor="end">${v.toFixed(1)}</text>`;
+    }
+    for (let k = 0; k <= 3; k++) {
+      const v = sMax * k / 3;
+      s += `<text x="${W - R + 4}" y="${y2(v) + 3}" fill="#64748b" font-size="8">${Math.round(v / 1000)}k</text>`;
+    }
+
+    const bw = pw / pesoRaw.length * 0.55;
+    pasos.forEach((v, i) => {
+      s += `<rect x="${x(i) - bw / 2}" y="${y2(v)}" width="${bw}" height="${T + ph - y2(v)}" rx="1.5" fill="#334155"/>`;
+    });
+
+    s += `<line x1="${L}" x2="${W - R}" y1="${y2(8000)}" y2="${y2(8000)}" stroke="#34d399" stroke-dasharray="4 4"/>`;
+    s += `<polyline points="${pesoSuave.map((v, i) => x(i) + ',' + y1(v)).join(' ')}" fill="none" stroke="#22d3ee" stroke-width="2.5" stroke-linejoin="round" stroke-linecap="round"/>`;
+    pesoRaw.forEach((v, i) => { s += `<circle cx="${x(i)}" cy="${y1(v)}" r="1.8" fill="#0e7490"/>`; });
+
+    labels.forEach((lb, i) => {
+      if (i % 6 === 0 || i === labels.length - 1)
+        s += `<text x="${x(i)}" y="${H - 7}" fill="#94a3b8" font-size="8" text-anchor="middle">${lb}</text>`;
+    });
+
+    s += legend([['#22d3ee', 'Peso (media 7d)'], ['#334155', 'Pasos'], ['#34d399', 'Mín. 8.000']]);
+    document.getElementById('chart-peso').innerHTML =
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">${s}</svg>`;
+  })();
+
+  // ----- Gráfico 2: déficit real vs teórico -----
+  (function () {
+    const weeks = ['11/05', '18/05', '25/05', '01/06', '08/06'];
+    const teorico = [510, 506, 503, 500, 497];
+    const real = [null, 462, 547, 410, 528];
+    const W = 400, H = 210, L = 36, R = 14, T = 28, B = 24;
+    const pw = W - L - R, ph = H - T - B;
+    const yMax = 600;
+    const x = i => L + i * pw / (weeks.length - 1);
+    const y = v => T + ph - v / yMax * ph;
+    let s = '';
+
+    for (let k = 0; k <= 4; k++) {
+      const v = yMax * k / 4, yy = y(v);
+      s += `<line x1="${L}" x2="${W - R}" y1="${yy}" y2="${yy}" stroke="#1f2937" stroke-dasharray="3 3"/>`;
+      s += `<text x="${L - 5}" y="${yy + 3}" fill="#94a3b8" font-size="8" text-anchor="end">${v}</text>`;
+    }
+    weeks.forEach((wk, i) => {
+      s += `<text x="${x(i)}" y="${H - 7}" fill="#94a3b8" font-size="8" text-anchor="middle">${wk}</text>`;
+    });
+
+    s += `<polyline points="${teorico.map((v, i) => x(i) + ',' + y(v)).join(' ')}" fill="none" stroke="#64748b" stroke-width="2" stroke-dasharray="6 4"/>`;
+    const realPts = real.map((v, i) => v == null ? null : [x(i), y(v)]).filter(Boolean);
+    s += `<polyline points="${realPts.map(p => p.join(',')).join(' ')}" fill="none" stroke="#34d399" stroke-width="2.5" stroke-linejoin="round"/>`;
+    realPts.forEach(p => { s += `<circle cx="${p[0]}" cy="${p[1]}" r="3" fill="#34d399"/>`; });
+
+    s += legend([['#64748b', 'Déficit teórico'], ['#34d399', 'Déficit real (Δ peso)']]);
+    document.getElementById('chart-deficit').innerHTML =
+      `<svg viewBox="0 0 ${W} ${H}" width="100%" height="100%" preserveAspectRatio="xMidYMid meet">${s}</svg>`;
+  })();
+}
+Chart_render();
+</script>
+</body>
+</html>
