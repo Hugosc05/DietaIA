@@ -116,7 +116,7 @@ export async function POST(request: NextRequest) {
     .join('\n');
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-flash-latest',
     systemInstruction: buildSystemPrompt(profile as Profile, dietText),
     generationConfig: {
       responseMimeType: 'application/json',
@@ -197,9 +197,10 @@ export async function POST(request: NextRequest) {
       contenido: change.contenido,
       resumen: change.resumen
     });
-  } catch {
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : 'desconocido';
     return NextResponse.json(
-      { error: 'No se pudo procesar el cambio de dieta. Inténtalo de nuevo.' },
+      { error: `No se pudo procesar el cambio de dieta (${detail.slice(0, 200)})` },
       { status: 502 }
     );
   }

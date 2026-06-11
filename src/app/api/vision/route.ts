@@ -51,7 +51,7 @@ export async function POST(request: NextRequest) {
   const bytes = Buffer.from(await image.arrayBuffer());
 
   const model = genAI.getGenerativeModel({
-    model: 'gemini-1.5-flash',
+    model: 'gemini-flash-latest',
     systemInstruction: SYSTEM_PROMPT,
     generationConfig: {
       responseMimeType: 'application/json',
@@ -73,9 +73,10 @@ export async function POST(request: NextRequest) {
 
     const parsed = JSON.parse(result.response.text()) as VisionResult;
     return NextResponse.json(parsed);
-  } catch {
+  } catch (err) {
+    const detail = err instanceof Error ? err.message : 'desconocido';
     return NextResponse.json(
-      { error: 'No se pudo analizar la imagen. Inténtalo con mejor iluminación.' },
+      { error: `No se pudo analizar la imagen (${detail.slice(0, 200)})` },
       { status: 502 }
     );
   }
