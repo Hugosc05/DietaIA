@@ -28,7 +28,9 @@ export async function getOrCreateTodayLog(): Promise<DailyLog | null> {
   return data as DailyLog | null;
 }
 
-export async function updateTodayLog(patch: Partial<DailyLog>): Promise<DailyLog | null> {
+export async function updateTodayLog(
+  patch: Record<string, boolean | number | string | null>
+): Promise<DailyLog | null> {
   const supabase = createClient();
   const {
     data: { user }
@@ -47,7 +49,7 @@ export async function updateTodayLog(patch: Partial<DailyLog>): Promise<DailyLog
 
 export async function updateLogForDate(
   fecha: string,
-  patch: Partial<DailyLog>
+  patch: Record<string, boolean | number | string | null>
 ): Promise<DailyLog | null> {
   const supabase = createClient();
   const {

@@ -65,10 +65,10 @@ export default function WeeklyDietView() {
     const okKey = `${meal}_ok` as keyof DailyLog;
     const opKey = `${meal}_opcion` as keyof DailyLog;
     const alreadySelected = todayLog[opKey] === opcion && todayLog[okKey] === true;
-    const patch = alreadySelected
-      ? { [okKey]: false, [opKey]: null }
-      : { [okKey]: true, [opKey]: opcion };
-    const saved = await updateTodayLog(patch as Partial<DailyLog>);
+    const patch: Record<string, boolean | number | null> = alreadySelected
+      ? { [`${meal}_ok`]: false, [`${meal}_opcion`]: null }
+      : { [`${meal}_ok`]: true, [`${meal}_opcion`]: opcion };
+    const saved = await updateTodayLog(patch);
     if (saved) setTodayLog(saved);
   }
 
